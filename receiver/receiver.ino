@@ -18,9 +18,12 @@ void setup() {
 }
 
 void loop() {
+  static unsigned long previousMillis = 0;
+  
   if (mySwitch.available()) {
     
     int value = mySwitch.getReceivedValue();
+    
     
     if (value == 0) {
       Serial.println("Unknown encoding");
@@ -30,19 +33,24 @@ void loop() {
         Serial.println("Received A");
         digitalWrite(pin2, HIGH);
         digitalWrite(pin1, LOW);   
-        delay(1000);
-        digitalWrite(pin1, HIGH);                 
+        previousMillis = millis();
+                        
       }
       if (value == codeB) {
         Serial.println("Received B");
         digitalWrite(pin1, HIGH);
-        digitalWrite(pin2, LOW);   
-        delay(1000);                      
-        digitalWrite(pin2, HIGH);
+        digitalWrite(pin2, LOW);                        
+        previousMillis = millis();
       }
       
     }
 
     mySwitch.resetAvailable();
+  }
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= 1000) {
+     previousMillis = currentMillis;
+     digitalWrite(pin2, HIGH);
+     digitalWrite(pin1, HIGH); 
   }
 }
